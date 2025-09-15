@@ -2,13 +2,10 @@ package com.example.touristguide.controller;
 
 import com.example.touristguide.model.TouristAttraction;
 import com.example.touristguide.service.TouristService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 @RequestMapping("/attractions")
