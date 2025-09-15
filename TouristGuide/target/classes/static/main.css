@@ -1,0 +1,8 @@
+body{max-width:720px;margin:24px auto;background:white;padding:16px;font-family:Arial,Helvetica,sans-serif}
+h1{font-size:1.5em;margin-bottom:10px}
+label{width:150px;display:inline-block;margin-top:8px}
+table,th,td{border:1px solid black;border-collapse:collapse;padding:6px}
+th{text-align:left}
+select,input[type="text"]{width:240px;box-sizing:border-box}
+.checkboxes label{display:block;margin:4px 0}
+.btn{border:1px solid #333;padding:6px 10px;text-decoration:none;display:inline-block;margin-bottom:10px}

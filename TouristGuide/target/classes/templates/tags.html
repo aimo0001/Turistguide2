@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tags</title>
+    <link th:href="@{/main.css}" rel="stylesheet">
+</head>
+<body>
+<h1 th:text="${item != null ? item.name : 'Ukendt'}"></h1>
+
+<p>
+    <strong>Tags:</strong>
+    <span th:if="${item != null}" th:each="t,iter : ${item.tags}">
+    <span th:text="${t}"></span><span th:if="${!iter.last}">, </span>
+  </span>
+    <span th:if="${item == null}">Ingen data</span>
+</p>
+
+<p><a th:href="@{/attractions}">Tilbage</a></p>
+</body>
+</html>
