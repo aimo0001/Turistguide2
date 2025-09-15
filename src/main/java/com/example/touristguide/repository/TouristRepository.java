@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public class TouristRepository {
 
-    private List<TouristAttraction> storeAttractions = new ArrayList<>(List.of(new TouristAttraction("SMK", "Museum for Kunst", "København", List.of("Kunst", "Museum")),
+    private final List<TouristAttraction> storeAttractions = new ArrayList<>(List.of(new TouristAttraction("SMK", "Museum for Kunst", "København", List.of("Kunst", "Museum")),
             new TouristAttraction("Odense Zoo", "Europas bedste zoo", "Odense", List.of("Børnevenlig")),
             new TouristAttraction("Dyrehaven", "Naturpark med skovområder", "Kongens Lyngby", List.of("Natur", "Gratis")),
             new TouristAttraction("Tivoli", "Forlystelsespark i København centrum", "København", List.of("Børnevenlig"))
