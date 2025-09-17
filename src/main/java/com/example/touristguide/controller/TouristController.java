@@ -6,12 +6,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-
 @Controller
 @RequestMapping("/attractions")
 public class TouristController {
     private final TouristService service;
-    public TouristController(TouristService service) {this.service= service;}
+    public TouristController(TouristService service) {this.service = service;}
 
     @GetMapping
     public String list(Model model){
@@ -21,34 +20,36 @@ public class TouristController {
 
     @GetMapping("/{name}/tags")
     public String tags(@PathVariable("name") String name, Model model){
-        model.addAttribute("item", service.one(name).orElse(null));
+        model.addAttribute("item", service.one(name)
+                .orElseThrow(() -> new IllegalArgumentException("Attraction not found: " + name)));
         return "tags";
     }
 
     @GetMapping("/add")
     public String addForm(Model model){
-        model.addAttribute("item",new TouristAttraction());
+        model.addAttribute("item", new TouristAttraction());
         model.addAttribute("cities", service.cities());
         model.addAttribute("allTags", service.tagCatalog());
         return "add";
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("item") TouristAttraction a ) {
+    public String save(@ModelAttribute("item") TouristAttraction a) {
         service.save(a);
         return "redirect:/attractions";
     }
 
     @GetMapping("/{name}/edit")
     public String editForm(@PathVariable("name") String name, Model model){
-        model.addAttribute("item", service.one(name).orElse(null));
+        model.addAttribute("item", service.one(name)
+                .orElseThrow(() -> new IllegalArgumentException("Attraction not found: " + name)));
         model.addAttribute("cities", service.cities());
         model.addAttribute("allTags", service.tagCatalog());
         return "updateAttraction";
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("item") TouristAttraction a ) {
+    public String update(@ModelAttribute("item") TouristAttraction a) {
         service.save(a);
         return "redirect:/attractions";
     }
@@ -58,5 +59,4 @@ public class TouristController {
         service.remove(name);
         return "redirect:/attractions";
     }
-
 }
