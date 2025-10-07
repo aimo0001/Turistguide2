@@ -20,20 +20,32 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Build & test (Maven)
+      # Maven-build (kun hvis pom.xml findes)
+      - name: Build with Maven
+        if: ${{ hashFiles('pom.xml') != '' }}
         run: mvn -B -DskipITs=false verify
 
+      # Gradle-build (kun hvis build.gradle / build.gradle.kts findes)
+      - name: Prepare Gradle
+        if: ${{ hashFiles('build.gradle') != '' || hashFiles('build.gradle.kts') != '' }}
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        if: ${{ hashFiles('build.gradle') != '' || hashFiles('build.gradle.kts') != '' }}
+        run: ./gradlew build --no-daemon
+
+      # Kør Qodana UANSET om build fejlede, så du kan få rapport/screenshot
       - name: Qodana (JVM)
+        if: ${{ always() }}
         uses: JetBrains/qodana-action@v2024.2
         with:
-          # Brug denne, hvis dit projekt ligger i roden:
           args: --project-dir .
           cache-default-branch-only: true
-        env:
-        # Valgfrit - hvis du har QODANA_TOKEN som secret:
-        # QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+        # env:
+        #   QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # valgfrit
 
       - name: Upload Qodana report
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: qodana-report

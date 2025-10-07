@@ -1,7 +1,12 @@
 version: "1.0"
+linter: jetbrains/qodana-jvm:2024.2
 profile:
   name: qodana.recommended
+projectJDK: "17"
 exclude:
   - name: All
     paths:
-      - target
+      - target/
+      - build/
+      - .idea/
+      - .qodana/
