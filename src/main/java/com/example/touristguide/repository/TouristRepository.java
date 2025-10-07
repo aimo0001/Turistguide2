@@ -4,6 +4,7 @@ import com.example.touristguide.model.TouristAttraction;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +38,12 @@ public class TouristRepository {
 
     public Optional<TouristAttraction> findByName(String name) {
         var rows = jdbc.query(
-                "SELECT name, description, city FROM attraction WHERE name = ?",
+                "SELECT name, description, city FROM attraction WHERE UPPER(name)=UPPER(?)",
                 MAPPER, name
         );
         if (rows.isEmpty()) return Optional.empty();
         var a = rows.get(0);
-        a.setTags(findTags(name));
+        a.setTags(findTags(a.getName()));
         return Optional.of(a);
     }
 
@@ -52,13 +53,13 @@ public class TouristRepository {
             FROM tag t
             JOIN attraction_tag at ON at.tag_id = t.id
             JOIN attraction a ON a.id = at.attraction_id
-            WHERE a.name = ?
+            WHERE UPPER(a.name)=UPPER(?)
             ORDER BY t.name
             """, (rs, n) -> rs.getString(1), attractionName);
     }
 
+    @Transactional
     public void save(TouristAttraction a) {
-        // Upsert på name (unik constraint i schema.sql)
         jdbc.update("""
             INSERT INTO attraction(name, description, city)
             VALUES (?, ?, ?)
@@ -67,7 +68,7 @@ public class TouristRepository {
             """, a.getName(), a.getDescription(), a.getCity());
 
         Integer attractionId = jdbc.queryForObject(
-                "SELECT id FROM attraction WHERE name = ?",
+                "SELECT id FROM attraction WHERE UPPER(name)=UPPER(?)",
                 Integer.class, a.getName()
         );
 
@@ -75,20 +76,22 @@ public class TouristRepository {
 
         if (a.getTags() != null) {
             for (String tag : a.getTags()) {
+                jdbc.update("INSERT IGNORE INTO tag(name) VALUES (?)", tag);
                 Integer tagId = jdbc.queryForObject(
                         "SELECT id FROM tag WHERE name = ?",
                         Integer.class, tag
                 );
                 jdbc.update(
-                        "INSERT INTO attraction_tag(attraction_id, tag_id) VALUES (?, ?)",
+                        "INSERT IGNORE INTO attraction_tag(attraction_id, tag_id) VALUES (?, ?)",
                         attractionId, tagId
                 );
             }
         }
     }
 
+    @Transactional
     public boolean deleteByName(String name) {
-        return jdbc.update("DELETE FROM attraction WHERE name = ?", name) > 0;
+        return jdbc.update("DELETE FROM attraction WHERE UPPER(name)=UPPER(?)", name) > 0;
     }
 
     public List<String> getCities() {
